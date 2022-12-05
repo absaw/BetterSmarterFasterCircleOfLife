@@ -31,13 +31,14 @@ if __name__=="__main__":
     # for k in range(1,n_iterations):
 
     state_dict=defaultdict()
-    for agent in range(1,n_nodes):
-        for prey in range(1,n_nodes):
-            for predator in range(1,n_nodes):
+    for agent in range(1,n_nodes+1):
+        for prey in range(1,n_nodes+1):
+            for predator in range(1,n_nodes+1):
                 state_dict[(agent,prey,predator)]=[0,0] #reward, utility
     
     #Setting rewards
-
+    # print("initial state _dict->\n")
+    # print_dict(state_dict)
     for state in state_dict:
         # if state[0]==state[1]: #agent and prey has same position
         #     state_dict[state][0]=0 #minimum possible expected number of steps to prey is 0
@@ -53,7 +54,7 @@ if __name__=="__main__":
     G=GraphClass.G
     # GraphClass.visualize_graph()
     beta=0.9
-    n_iterations=1
+    n_iterations=2
     for k in range(n_iterations):
         #Running for all states
         for state in state_dict:
@@ -66,13 +67,15 @@ if __name__=="__main__":
             agent_neighbors=list(G.neighbors(agent))
             prey_neighbors=list(G.neighbors(prey))+[prey]
             predator_neighbors=list(G.neighbors(predator))
-
+            agent_action_space=defaultdict()
             for ag_neighbor in agent_neighbors:
+                agent_action_space[ag_neighbor]=[]
                 for prey_neighbor in prey_neighbors:
                     for predator_neighbor in predator_neighbors:
                         action_space[(ag_neighbor,prey_neighbor,predator_neighbor)]=[0] #we will store the probability in here
+                        agent_action_space[ag_neighbor].append((ag_neighbor,prey_neighbor,predator_neighbor))
             
-            print_dict(action_space)
+            # print_dict(action_space)
             #Prob of agent must be decided by the policy which is to take the next neighbor with 
             # the least utility value 
             p_agent=1/(G.degree(agent))
@@ -98,38 +101,54 @@ if __name__=="__main__":
                     p_pred_2=0
             
                 p_pred = p_pred_1+p_pred_2
-
                 prob_action=p_agent*p_prey*p_pred
-
                 action_space[action][0] = prob_action
-            
                 prob_sum+=prob_action
             #Now we have the transition probability of all the possible action states from the current state s
 
-            print(len(action_space))
-            print_dict(action_space)
-            print(prob_sum)
+            # print(len(action_space))
+            # print_dict(action_space)
+            # print(prob_sum)
 
             #Calculating iterative U*
             reward=state_dict[state][0]
-            prev_utility=state_dict[state][1]
+            # prev_utility=state_dict[state][-1]
             #We will calculate V for all possible actions. Then take the min of these values to be the final V for this iteration
             
             utility_space=defaultdict()
             # min_utility=-1
-            for action in action_space:
-                utility = reward + beta * action_space[action][0] * prev_utility
-                utility_space[action]=utility
-                # action_space[action].append(utility)
-                # if utility>min_utility:
-                    # min_utility=utility
-            min_utility=min(utility_space.values())
-            min_utility_list=[key for key in utility_space if utility_space[key]==min_utility]
-            print_dict(utility_space)
-            print(min_utility_list)
-
-
-        break
+            # Now we have all the actions possible for this particular state
+            # We want the utility calculation done for the actions of 
+            agent_utility_dict=defaultdict()
+            # print("Length of agent action space:",len(agent_action_space))
+            # print("Agent Action Space dict")
+            # print_dict(agent_action_space)
+            
+            for agent_action in agent_action_space:
+                #expected_utility=summation of product of individual probabilities and utilities of transition states
+                configurations=agent_action_space[agent_action]
+                expected_utility=0
+                for config in configurations:
+                    #expected utility = prob * 
+                    expected_utility+= action_space[config][0]*state_dict[config][-1]
+                agent_utility_dict[agent_action]=expected_utility
+            
+            min_utility=min(agent_utility_dict.values())
+            min_possible_action=[key for key in agent_utility_dict if agent_utility_dict[key]==min_utility] # getting the minimum 
+            state_dict[state].append(min_utility)
+            
+            # for action in action_space:
+            #     utility = reward + beta * action_space[action][0] * prev_utility
+            #     utility_space[action]=utility
+            #     # action_space[action].append(utility)
+            #     # if utility>min_utility:
+            #         # min_utility=utility
+            # min_utility=min(utility_space.values())
+            # # min_utility_list=[key for key in utility_space if utility_space[key]==min_utility]
+            # print_dict(utility_space)
+            # state_dict[state].append(min_utility)
+            # # print(min_utility_list)
+    print_dict(state_dict)
 
 
 
