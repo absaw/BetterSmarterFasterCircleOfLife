@@ -1,6 +1,7 @@
 from collections import defaultdict
 from Graph import *
 from BFS import *
+import math
 def print_dict(d):
     for key,value in d.items():
         print(key," : ",value)
@@ -36,23 +37,26 @@ if __name__=="__main__":
             for predator in range(1,n_nodes+1):
                 state_dict[(agent,prey,predator)]=[0,0] #reward, utility
     
+    GraphClass=Graph(10)
+    G=GraphClass.G
+    # GraphClass.visualize_graph()
+    
     #Setting rewards
     # print("initial state _dict->\n")
     # print_dict(state_dict)
     for state in state_dict:
-        # if state[0]==state[1]: #agent and prey has same position
-        #     state_dict[state][0]=0 #minimum possible expected number of steps to prey is 0
+        if state[0]==state[1]: #agent and prey has same position
+            state_dict[state]=[0,0] #minimum possible expected number of steps to prey is 0
         #     state_dict[state]
-        if state[0]==state[2]:
-            state_dict[state]=[10000,10000] #reaching prey is impossible so a high value
+        elif state[0]==state[2]:
+            state_dict[state]=[math.inf,0] #reaching prey is impossible so a high value
         else:
-            state_dict[state]=[1,1]
+            distance_to_prey=len(get_bfs_path(G,state[0],state[1]))
+            state_dict[state]=[1]+[distance_to_prey]
+        
 
     # print_dict(state_dict)
 
-    GraphClass=Graph(10)
-    G=GraphClass.G
-    # GraphClass.visualize_graph()
     beta=0.9
     n_iterations=2
     for k in range(n_iterations):
@@ -122,7 +126,7 @@ if __name__=="__main__":
             agent_utility_dict=defaultdict()
             # print("Length of agent action space:",len(agent_action_space))
             # print("Agent Action Space dict")
-            # print_dict(agent_action_space)
+            # print_dict(agent_action_space) 
             
             for agent_action in agent_action_space:
                 #expected_utility=summation of product of individual probabilities and utilities of transition states
@@ -131,6 +135,7 @@ if __name__=="__main__":
                 for config in configurations:
                     #expected utility = prob * 
                     expected_utility+= action_space[config][0]*state_dict[config][-1]
+                expected_utility+=reward
                 agent_utility_dict[agent_action]=expected_utility
             
             min_utility=min(agent_utility_dict.values())
