@@ -3,9 +3,9 @@ from turtle import pos
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
-from collections import deque
+from collections import deque,defaultdict
 
-
+from BFS import *
 #Generate a graph with self.n_nodes. Max degree = 3. Nodes are numbered from 1 to self.n_nodes(i.e. 50)
 class Graph:
 
@@ -122,9 +122,9 @@ class Graph:
     # generate_graph(50)
 
 if __name__=="__main__":
-    
-    # GraphClass=Graph(50)
-    # G=GraphClass.G
+    n_nodes=50
+    GraphClass=Graph(50)
+    G=GraphClass.G
     # cycles=list(nx.cycle_basis(G.to_undirected()))
     # # print("Cycle list ->",*cycles)
     # print("Cycles with length less than 5")
@@ -135,15 +135,28 @@ if __name__=="__main__":
     # print("Cycle list ->",list(nx.simple_cycles(G)))
     # GraphClass.visualize_graph()
     
-    n_edges=[]
-    #Finding the smallest no. of edges we are always able to add.
-    for i in range(1000000):
-        GraphClass=Graph(50)
-        G=GraphClass.G
-        edge_list=list(G.edges)
-        # print(len(edge_list))
-        n_edges.append(len(edge_list)-50)
+    # n_edges=[]
+    # #Finding the smallest no. of edges we are always able to add.
+    # for i in range(1000000):
+    #     GraphClass=Graph(50)
+    #     G=GraphClass.G
+    #     edge_list=list(G.edges)
+    #     # print(len(edge_list))
+    #     n_edges.append(len(edge_list)-50)
     
-    # print(*n_edges)
-    print("Max =",max(n_edges))
-    print("Min =",min(n_edges))
+    # # print(*n_edges)
+    # print("Max =",max(n_edges))
+    # print("Min =",min(n_edges))
+
+    #Reading a graph
+    # G = nx.read_gpickle("StoredGraph/Graph1.gpickle")
+
+    #========== Distance dict ============
+    # dist_dict=defaultdict()
+    # for start_node in range(1,n_nodes+1):
+    #     for end_node in range(1,n_nodes+1):
+    #         dist_dict[(start_node,end_node)]=len(get_bfs_path(G, start_node, end_node))
+    # print(dist_dict)
+
+    #Saving a graph 
+    # nx.write_gpickle(G, "StoredGraph/Graph1.gpickle")

@@ -1,0 +1,5 @@
+12/6/22
+1. Save graph 
+- Calc distance dictionary
+2. Test utility expression
+3. Optimize utility expression
