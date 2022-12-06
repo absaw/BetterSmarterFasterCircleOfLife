@@ -2,11 +2,30 @@ from collections import defaultdict
 from Graph import *
 from BFS import *
 import math
+from datetime import datetime
+
 def print_dict(d):
     for key,value in d.items():
         print(key," : ",value)
 
 if __name__=="__main__":
+
+    #=========== Log file =======================
+    filename_txt="Results/Utility3.txt"
+    # filename_csv="Results/AgentOne.csv"
+    file=open(filename_txt,"a")
+    # csvfile = open(filename_csv, "a")
+    # csv_writer=csv.writer(csvfile)
+    # fields=['Date Time','Simulation Number','Number of Graphs','Won','Died','Hanged','Comments']
+    # csv_writer.writerow(fields)
+    text = "\n\n\n======  Start Time  =========->  " + \
+        datetime.now().strftime("%m/%d/%y %H:%M:%S")
+    file.write(text)
+    # file.write("\nNo. of Simulations = 30")
+    # file.write("\nNo. of trials for each simulation = 100")
+    # csv_writer.writerow(["Execution Started"])
+
+    #============================================
     # state_list=[]
     n_nodes=10
     # for agent in range(1,n_nodes):
@@ -37,10 +56,10 @@ if __name__=="__main__":
             for predator in range(1,n_nodes+1):
                 state_dict[(agent,prey,predator)]=[0,0] #reward, utility
     
-    GraphClass=Graph(10)
+    GraphClass=Graph(n_nodes)
     G=GraphClass.G
     # GraphClass.visualize_graph()
-    
+
     #Setting rewards
     # print("initial state _dict->\n")
     # print_dict(state_dict)
@@ -58,7 +77,7 @@ if __name__=="__main__":
     # print_dict(state_dict)
 
     beta=0.9
-    n_iterations=2
+    n_iterations=100
     for k in range(n_iterations):
         #Running for all states
         for state in state_dict:
@@ -82,8 +101,8 @@ if __name__=="__main__":
             # print_dict(action_space)
             #Prob of agent must be decided by the policy which is to take the next neighbor with 
             # the least utility value 
-            p_agent=1/(G.degree(agent))
-            # p_agent=1
+            # p_agent=1/(G.degree(agent))
+            p_agent=1
             p_prey=1/(G.degree(prey)+1)
 
             p_pred_1 = 0.4/G.degree(predator)
@@ -105,6 +124,7 @@ if __name__=="__main__":
                     p_pred_2=0
             
                 p_pred = p_pred_1+p_pred_2
+                # prob_action=p_agent*p_prey*p_pred
                 prob_action=p_agent*p_prey*p_pred
                 action_space[action][0] = prob_action
                 prob_sum+=prob_action
@@ -134,13 +154,24 @@ if __name__=="__main__":
                 expected_utility=0
                 for config in configurations:
                     #expected utility = prob * 
-                    expected_utility+= action_space[config][0]*state_dict[config][-1]
-                expected_utility+=reward
+                    isTerminated=False
+                    if config[0]==config[1]:
+                        expected_utility=0
+                        isTerminated=True
+
+                    elif config[0]==config[2]:
+                        expected_utility=math.inf
+                        isTerminated=True
+                    else:
+                        expected_utility+= action_space[config][0]*state_dict[config][-1]
+                if not isTerminated:
+                    expected_utility+=reward
                 agent_utility_dict[agent_action]=expected_utility
             
             min_utility=min(agent_utility_dict.values())
             min_possible_action=[key for key in agent_utility_dict if agent_utility_dict[key]==min_utility] # getting the minimum 
             state_dict[state].append(min_utility)
+
             
             # for action in action_space:
             #     utility = reward + beta * action_space[action][0] * prev_utility
@@ -153,6 +184,13 @@ if __name__=="__main__":
             # print_dict(utility_space)
             # state_dict[state].append(min_utility)
             # # print(min_utility_list)
+            # print("State Done ",state)
+            # break
+        # print("Iteration Done ->",k)
+    # with file: 
+    for key, value in state_dict.items(): 
+        file.write('    %s  :       %s  \n' % (key, value))
+    print("Done")
     print_dict(state_dict)
 
 
