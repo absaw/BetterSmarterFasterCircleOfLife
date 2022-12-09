@@ -1,5 +1,7 @@
 12/6/22
-1. Save graph 
-- Calc distance dictionary
-2. Test utility expression
-3. Optimize utility expression
+- Save graph  -- Done
+- Calc distance dictionary -- done
+- Test utility expression -- Done
+- Optimize utility expression -- Done
+-Try for different graphs
+- Develop U* agent 

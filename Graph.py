@@ -4,8 +4,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 from collections import deque,defaultdict
-
 from BFS import *
+import pickle
 #Generate a graph with self.n_nodes. Max degree = 3. Nodes are numbered from 1 to self.n_nodes(i.e. 50)
 class Graph:
 
@@ -113,6 +113,7 @@ class Graph:
         nx.draw_networkx(self.G,pos=pos,with_labels=True,edge_color="Green")
         # nx.draw_circular(G,with_labels=True)
         plt.show()
+        
         # nx.draw(self.G,with_labels=True)
         # plt.show()
 
@@ -122,9 +123,9 @@ class Graph:
     # generate_graph(50)
 
 if __name__=="__main__":
-    n_nodes=50
-    GraphClass=Graph(50)
-    G=GraphClass.G
+    # n_nodes=50
+    # GraphClass=Graph(50)
+    # G=GraphClass.G
     # cycles=list(nx.cycle_basis(G.to_undirected()))
     # # print("Cycle list ->",*cycles)
     # print("Cycles with length less than 5")
@@ -148,15 +149,54 @@ if __name__=="__main__":
     # print("Max =",max(n_edges))
     # print("Min =",min(n_edges))
 
-    #Reading a graph
+    # Reading a graph
     # G = nx.read_gpickle("StoredGraph/Graph1.gpickle")
 
-    #========== Distance dict ============
+    # ========== Distance dict ============
     # dist_dict=defaultdict()
     # for start_node in range(1,n_nodes+1):
     #     for end_node in range(1,n_nodes+1):
     #         dist_dict[(start_node,end_node)]=len(get_bfs_path(G, start_node, end_node))
-    # print(dist_dict)
+    # Writing dictionary as a text file
+    # with open('StoredGraph/dist_dict1.txt', 'w') as file:
+    #     file.write(str(dist_dict))
 
-    #Saving a graph 
-    # nx.write_gpickle(G, "StoredGraph/Graph1.gpickle")
+    # Saving a graph 
+    # nx.write_gpickle(G, "StoredGraph/Graph3.gpickle")
+
+    #========Dumping a dictionary as pickle and then reading it again using loads =====
+    # file = open("StoredGraph/dist_dict1.txt", "wb")
+    # pickle.dump(dist_dict, file)
+    # file.close()
+    with open('StoredUtilities/Graph1_Utility.pkl', 'rb') as handle:
+        data = handle.read()
+    d = pickle.loads(data)
+    
+    # print("Data type before reconstruction : ", type(data))
+    # print("Data type after reconstruction : ", type(d))
+    # print(d[(50,50)])
+    
+    #Neighbor List
+
+    # for node in range(1,51):
+    #     print(node,"->",list(G.neighbors(node)))
+    
+    # pos=nx.circular_layout(self.G)
+
+    # nx.draw_networkx(G,pos=pos,with_labels=True,edge_color="Green")
+    # nx.draw(G,with_labels=True)
+
+        # nx.draw_circular(G,with_labels=True)
+    # plt.show()
+
+    # import matplotlib.pylab as plt
+
+    # lists = sorted(d.items()) # sorted by key, return a list of tuples
+
+    # x, y = zip(*lists) # unpack a list of pairs into two tuples
+    # print(x)
+    # print(y)
+    # plt.plot(x, y)
+    # plt.show()
+
+    
