@@ -1,2 +1,4 @@
 *.pyc
 Backup
+Results
+.DS_Store
