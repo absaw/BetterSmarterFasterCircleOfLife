@@ -123,7 +123,7 @@ class Graph:
     # generate_graph(50)
 
 if __name__=="__main__":
-    # n_nodes=50
+    n_nodes=50
     # GraphClass=Graph(50)
     # G=GraphClass.G
     # cycles=list(nx.cycle_basis(G.to_undirected()))
@@ -150,13 +150,13 @@ if __name__=="__main__":
     # print("Min =",min(n_edges))
 
     # Reading a graph
-    # G = nx.read_gpickle("StoredGraph/Graph1.gpickle")
+    G = nx.read_gpickle("StoredGraph/Graph1.gpickle")
 
     # ========== Distance dict ============
-    # dist_dict=defaultdict()
-    # for start_node in range(1,n_nodes+1):
-    #     for end_node in range(1,n_nodes+1):
-    #         dist_dict[(start_node,end_node)]=len(get_bfs_path(G, start_node, end_node))
+    dist_dict=defaultdict()
+    for start_node in range(1,n_nodes+1):
+        for end_node in range(1,n_nodes+1):
+            dist_dict[(start_node,end_node)]=len(get_bfs_path(G, start_node, end_node))-1
     # Writing dictionary as a text file
     # with open('StoredGraph/dist_dict1.txt', 'w') as file:
     #     file.write(str(dist_dict))
@@ -165,12 +165,12 @@ if __name__=="__main__":
     # nx.write_gpickle(G, "StoredGraph/Graph3.gpickle")
 
     #========Dumping a dictionary as pickle and then reading it again using loads =====
-    # file = open("StoredGraph/dist_dict1.txt", "wb")
-    # pickle.dump(dist_dict, file)
-    # file.close()
-    with open('StoredUtilities/Graph1_Utility.pkl', 'rb') as handle:
-        data = handle.read()
-    d = pickle.loads(data)
+    file = open("StoredDistances/dist_dict1.pkl", "wb")
+    pickle.dump(dist_dict, file)
+    file.close()
+    # with open('StoredUtilities/Graph1_Utility.pkl', 'rb') as handle:
+    #     data = handle.read()
+    # d = pickle.loads(data)
     
     # print("Data type before reconstruction : ", type(data))
     # print("Data type after reconstruction : ", type(d))
