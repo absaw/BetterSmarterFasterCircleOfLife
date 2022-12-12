@@ -9,12 +9,13 @@ import random
 import matplotlib.pyplot as plt
 class NeuralNetwork:
 
-    def __init__(self,X,Y,layer_list=[2,3,2,1]):
+    def __init__(self,X,Y,layer_list=[2,2,3,1]):
         self.n_layers=4
         self.layer_list=layer_list
         self.X=X
         self.Y=Y
         self.train_size=0.8
+        self.parameters={}
         
     def split_dataset(self):
         train_limit=int(125000*self.train_size)
@@ -24,7 +25,7 @@ class NeuralNetwork:
         self.Y_test=self.Y[train_limit:,:]
 
     def initialize_weights(self):
-        np.random.seed(6) # Seed the random number generator
+        np.random.seed(2) # Seed the random number generator
         self.W1=np.random.randn(self.layer_list[0],self.layer_list[1])
         self.B1=np.random.randn(self.layer_list[1],)
         
@@ -32,6 +33,14 @@ class NeuralNetwork:
         self.B2=np.random.randn(self.layer_list[2],)
 
         self.W3=np.random.randn(self.layer_list[2],self.layer_list[3])
+
+        self.parameters["W1"]=self.W1
+        self.parameters["W2"]=self.W2
+        self.parameters["W3"]=self.W3
+        self.parameters["B1"]=self.B1
+        self.parameters["B2"]=self.B2
+
+
     #Activation Functions
 
     def sigmoid(self,z):
@@ -42,6 +51,8 @@ class NeuralNetwork:
 
     def reLu(self,z):
         return np.maximum(0,z)
+        # return (np.exp(z)-np.exp(-z))/(np.exp(z)+np.exp(-z))
+
         # return 1/(1+np.exp(-z))
 
         # return np.maximum(0.1*z,z)
@@ -50,6 +61,8 @@ class NeuralNetwork:
         z[z<=0] = 0
         z[z>0] = 1
         return z
+        # return (1-z*z)
+
         # return (np.exp(-z)/(1+np.exp(-z))**2)
 
         # y=(z>0)*1
@@ -58,6 +71,10 @@ class NeuralNetwork:
     
     def leakyReLu(self,z):
         return np.maximum(0.1*z,z)
+    def tanh(self,z):
+        return (np.exp(z)-exp(-z))/(np.exp(z)+exp(-z))
+    def tanh_prime(self,z):
+        return (1-z*z)
 
     def mean_squared_error(self,y,y_hat):
         loss_vector=np.subtract(y,y_hat)
@@ -89,6 +106,12 @@ class NeuralNetwork:
 
         # self.loss=self.mean_squared_error(self.Y_train, self.Y_hat)
         # print(np.sqrt(self.loss))
+        self.parameters["Z1"]=self.Z1
+        self.parameters["A1"]=self.A1
+        self.parameters["Z2"]=self.Z2
+        self.parameters["A2"]=self.A2
+        self.parameters["Z3"]=self.Z3
+        self.parameters["Y_hat"]=self.Y_hat
         return self.Y_hat
     
     def forward_propogation_with_print(self):
@@ -116,24 +139,25 @@ class NeuralNetwork:
         return self.Y_hat
 
     def back_propogation(self):
-        a=2/len(self.Y_train)
+        # a=2/len(self.Y_train)
         y_diff=np.subtract(self.Y_train,self.Y_hat)
+        a=2*y_diff/len(self.Y_train)
         # self.delta_3=np.multiply(y_diff,self.reLuPrime(self.Z3))
-        self.delta_3=a*y_diff
+        self.delta_3=a
         self.dJ_dW3=np.dot(self.A2.T,self.delta_3)
         # self.dB3=np.sum(self.delta_3,axis=1,keepdims=True)
 
         self.delta_2=np.dot(self.delta_3,self.W3.T)
         self.delta_2=np.multiply(self.delta_2,self.reLuPrime(self.Z2))
         self.dJ_dW2=np.dot(self.A1.T,self.delta_2)
-        self.dB2=np.sum(self.delta_2,axis=0,keepdims=True)
+        self.dB2=np.sum(self.delta_2,axis=1,keepdims=True)
 
         self.delta_1=np.dot(self.delta_2,self.W2.T)
         self.delta_1=np.multiply(self.delta_1,self.reLuPrime(self.Z1))
         self.dJ_dW1=np.dot(self.X_train.T,self.delta_1)
-        self.dB1=np.sum(self.delta_1,axis=0,keepdims=True)
+        self.dB1=np.sum(self.delta_1,axis=1,keepdims=True)
 
-        alpha=0.0001
+        alpha=0.001
         # print(self.dJ_dW3.shape)
         # print(self.dJ_dW2.shape)
         # print(self.dJ_dW1.shape)
@@ -145,14 +169,18 @@ class NeuralNetwork:
         # print(self.dJ_dW1)
         # print(self.dJ_dW2)
         # print(self.dJ_dW3)
-        self.W3=self.W3+alpha*self.dJ_dW3 
-        self.W2=self.W2+alpha*self.dJ_dW2 
         self.W1=self.W1+alpha*self.dJ_dW1
+        self.W2=self.W2+alpha*self.dJ_dW2 
+        self.W3=self.W3+alpha*self.dJ_dW3 
 
-        
-        self.B2=self.B2+alpha*self.dB2
         self.B1=self.B1+alpha*self.dB1
-
+        self.B2=self.B2+alpha*self.dB2
+        
+        self.parameters["W1"]=self.W1
+        self.parameters["W2"]=self.W2
+        self.parameters["W3"]=self.W3
+        self.parameters["B1"]=self.B1
+        self.parameters["B2"]=self.B2
         # self.B3+=alpha*self.dB3
         # print(self.B2.shape)
         # print(self.dB2.shape)
@@ -248,19 +276,26 @@ if __name__=="__main__":
     for i in range(n_iterations):
 
         NN.back_propogation()
-        print("\n====")
-        print(NN.dJ_dW1)
-        print(NN.dJ_dW2)
-        print(NN.dJ_dW3)
+        # print("\n====")
+        # print(NN.dJ_dW1)
+        # print(NN.dJ_dW2)
+        # print(NN.dJ_dW3)
         NN.forward_propogation()
         loss=NN.mean_squared_error(NN.Y_train, NN.Y_hat)
         print(i,") RMSE == ",np.sqrt(loss))
         # print(i)
         loss_list.append(np.sqrt(loss))
+
     print("loss list = ",loss_list[-1])
+
     loss_list_x=range(1,len(loss_list)+1)
-    plt.plot(loss_list_x,loss_list)
-    plt.show()
+    NN.parameters["Loss"]=loss_list[-5:]
+    file = open("StoredWeights/weight_dict1.pkl", "wb")
+    pickle.dump(NN.parameters, file)
+
+    file.close()
+    # plt.plot(loss_list_x,loss_list)
+    # plt.show()
     # print(NN.Y_hat)
     # Y_hat_df=pd.DataFrame(NN.Y_hat)
     # print(Y_hat_df.describe())
