@@ -5,7 +5,8 @@ import pickle
 import networkx as nx
 from collections import defaultdict
 from BFS import *
-import random 
+import random
+import matplotlib.pyplot as plt
 class NeuralNetwork:
 
     def __init__(self,X,Y,layer_list=[2,3,2,1]):
@@ -23,7 +24,7 @@ class NeuralNetwork:
         self.Y_test=self.Y[train_limit:,:]
 
     def initialize_weights(self):
-        np.random.seed(1) # Seed the random number generator
+        np.random.seed(6) # Seed the random number generator
         self.W1=np.random.randn(self.layer_list[0],self.layer_list[1])
         self.B1=np.random.randn(self.layer_list[1],)
         
@@ -41,13 +42,23 @@ class NeuralNetwork:
 
     def reLu(self,z):
         return np.maximum(0,z)
+        # return 1/(1+np.exp(-z))
+
+        # return np.maximum(0.1*z,z)
+
     def reLuPrime(self,z):
-        y=(z>0)*1
-        return y
+        z[z<=0] = 0
+        z[z>0] = 1
+        return z
+        # return (np.exp(-z)/(1+np.exp(-z))**2)
+
+        # y=(z>0)*1
+        # return y
 
     
     def leakyReLu(self,z):
         return np.maximum(0.1*z,z)
+
     def mean_squared_error(self,y,y_hat):
         loss_vector=np.subtract(y,y_hat)
         mse=0
@@ -55,59 +66,102 @@ class NeuralNetwork:
             mse+=value**2
         mse=mse/len(y)
         return mse
-    def forward_propogation(self):
 
+    def forward_propogation(self):
+    
         self.Z1=np.dot(self.X_train,self.W1)+self.B1
-        #self.print_state(self.Z1)
+        # self.print_state(self.Z1)
         self.A1=self.reLu(self.Z1)
-        #self.print_state(self.A1)
+        # self.print_state(self.A1)
 
         # print("\n2nd")
         self.Z2=np.dot(self.A1,self.W2)+self.B2
-        #self.print_state(self.Z2)
+        # self.print_state(self.Z2)
         self.A2=self.reLu(self.Z2)
-        #self.print_state(self.A2)
+        # self.print_state(self.A2)
 
         # print("\n3rd")
         self.Z3=np.dot(self.A2,self.W3)
-        #self.print_state(self.Z3)
+        # self.print_state(self.Z3)
         # self.Y_hat=self.reLu(self.Z3)
         self.Y_hat=self.Z3
-        #self.print_state(self.Y_hat)
+        # self.print_state(self.Y_hat)
+
+        # self.loss=self.mean_squared_error(self.Y_train, self.Y_hat)
+        # print(np.sqrt(self.loss))
+        return self.Y_hat
+    
+    def forward_propogation_with_print(self):
+
+        self.Z1=np.dot(self.X_train,self.W1)#+self.B1
+        self.print_state(self.Z1)
+        self.A1=self.reLu(self.Z1)
+        self.print_state(self.A1)
+
+        print("\n2nd")
+        self.Z2=np.dot(self.A1,self.W2)#+self.B2
+        self.print_state(self.Z2)
+        self.A2=self.reLu(self.Z2)
+        self.print_state(self.A2)
+
+        print("\n3rd")
+        self.Z3=np.dot(self.A2,self.W3)
+        self.print_state(self.Z3)
+        # self.Y_hat=self.reLu(self.Z3)
+        self.Y_hat=self.Z3
+        self.print_state(self.Y_hat)
 
         self.loss=self.mean_squared_error(self.Y_train, self.Y_hat)
         print(np.sqrt(self.loss))
         return self.Y_hat
 
     def back_propogation(self):
-        a=-2/len(self.Y_hat)
-        self.delta_3=np.multiply(-(self.Y_train-self.Y_hat),self.reLuPrime(self.Z3))
+        a=2/len(self.Y_train)
+        y_diff=np.subtract(self.Y_train,self.Y_hat)
+        # self.delta_3=np.multiply(y_diff,self.reLuPrime(self.Z3))
+        self.delta_3=a*y_diff
         self.dJ_dW3=np.dot(self.A2.T,self.delta_3)
+        # self.dB3=np.sum(self.delta_3,axis=1,keepdims=True)
 
         self.delta_2=np.dot(self.delta_3,self.W3.T)
         self.delta_2=np.multiply(self.delta_2,self.reLuPrime(self.Z2))
         self.dJ_dW2=np.dot(self.A1.T,self.delta_2)
-        
+        self.dB2=np.sum(self.delta_2,axis=0,keepdims=True)
 
         self.delta_1=np.dot(self.delta_2,self.W2.T)
         self.delta_1=np.multiply(self.delta_1,self.reLuPrime(self.Z1))
         self.dJ_dW1=np.dot(self.X_train.T,self.delta_1)
+        self.dB1=np.sum(self.delta_1,axis=0,keepdims=True)
 
-        alpha=2
+        alpha=0.0001
         # print(self.dJ_dW3.shape)
         # print(self.dJ_dW2.shape)
         # print(self.dJ_dW1.shape)
-        print("\n ===========")
-        print(self.W1)
-        print(self.W2)
-        print(self.W3)
-        print()
-        print(self.dJ_dW1)
-        print(self.dJ_dW2)
-        print(self.dJ_dW3)
-        self.W3=self.W3+alpha*self.dJ_dW3
-        self.W2=self.W2+alpha*self.dJ_dW2
+        # print("\n ===========")
+        # print(self.W1)
+        # print(self.W2)
+        # print(self.W3)
+        # print("DJs")
+        # print(self.dJ_dW1)
+        # print(self.dJ_dW2)
+        # print(self.dJ_dW3)
+        self.W3=self.W3+alpha*self.dJ_dW3 
+        self.W2=self.W2+alpha*self.dJ_dW2 
         self.W1=self.W1+alpha*self.dJ_dW1
+
+        
+        self.B2=self.B2+alpha*self.dB2
+        self.B1=self.B1+alpha*self.dB1
+
+        # self.B3+=alpha*self.dB3
+        # print(self.B2.shape)
+        # print(self.dB2.shape)
+        
+
+        # print("Weights After updates")
+        # print(self.W1)
+        # print(self.W2)
+        # print(self.W3)
         
 
     def print_state(self,x):
@@ -118,6 +172,7 @@ class NeuralNetwork:
 
 if __name__=="__main__":
 
+    
     #Preparing dataset
     n_nodes=50
     with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredUtilities/Graph1_Utility6.pkl', 'rb') as handle:
@@ -159,20 +214,53 @@ if __name__=="__main__":
         else:
             Y[i]=utility
         i+=1
-        if i>10000:
-            break
+    
     # train=int(len(utility_dict)*0.8)
 
     NN=NeuralNetwork(X, Y)
+    # NN.print_state(X)
+    # NN.print_state(Y)
+    # a=np.zeros([2,3])
+    # a[0][1]=-1
+    # a[0][2]=3
+    # print(NN.reLuPrime(a))
     NN.split_dataset()
+
     NN.initialize_weights()
+    # NN.print_state(NN.W1)
+    # NN.print_state(NN.B1)
+    # NN.print_state(NN.W2)
+    # NN.print_state(NN.W3)
+
     NN.forward_propogation()
+    # NN.back_propogation()
+    # print(NN.dJ_dW1)
+    # print(NN.dJ_dW2)
+    # print(NN.dJ_dW3)
+    # NN.forward_propogation()
+    # NN.print_state(NN.W1)
+    # NN.print_state(NN.B1)
+    # NN.print_state(NN.W2)
+    # NN.print_state(NN.W3)
+
+    loss_list=[]
     n_iterations=10
     for i in range(n_iterations):
 
         NN.back_propogation()
+        print("\n====")
+        print(NN.dJ_dW1)
+        print(NN.dJ_dW2)
+        print(NN.dJ_dW3)
         NN.forward_propogation()
-    
+        loss=NN.mean_squared_error(NN.Y_train, NN.Y_hat)
+        print(i,") RMSE == ",np.sqrt(loss))
+        # print(i)
+        loss_list.append(np.sqrt(loss))
+    print("loss list = ",loss_list[-1])
+    loss_list_x=range(1,len(loss_list)+1)
+    plt.plot(loss_list_x,loss_list)
+    plt.show()
     # print(NN.Y_hat)
     # Y_hat_df=pd.DataFrame(NN.Y_hat)
     # print(Y_hat_df.describe())
