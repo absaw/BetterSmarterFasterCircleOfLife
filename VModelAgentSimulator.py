@@ -43,7 +43,7 @@ def v_model_agent():
         data = handle.read()
     utility_dict = pickle.loads(data)
     
-    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/param_dict_11.pkl', 'rb') as handle:
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/param_dict_14.pkl', 'rb') as handle:
         data = handle.read()
     param_dict = pickle.loads(data)
     
@@ -251,7 +251,7 @@ def v_model_agent():
     file.write("\n\nSummary : ")
     file.write("\nWin List : "+str(win_list))
     # file.write("\nLose List : "+str(lose_list))
-    file.write("\nAverage wins : %.2f" % (sum(win_list)/len(win_list)))
+    file.write("\nAverage wins : %.2f" % (sum(win_list)/30))
     # file.write("\nAverage losses : %.2f" % (sum(lose_list)/len(lose_list)))
     # file.write("\nAverage hangs : %.2f" % (sum(hang_list)/len(hang_list)))
     file.write("\nAverage steps : %.2f" % (sum(step_list)/len(step_list)))

@@ -263,6 +263,7 @@ if __name__=="__main__":
     
     X = np.zeros([125000,2])
     Y=np.zeros([125000,1])
+    max_value=50
     # X=[]
     # Y=[]
     i=0
@@ -275,7 +276,7 @@ if __name__=="__main__":
         if math.isinf(utility):
             # continue
             # Y[i]=100 #Some high value
-            Y[i][0]=50
+            Y[i][0]=max_value
         else:
             # Y.append(utility)
             Y[i][0]=utility
@@ -370,7 +371,8 @@ if __name__=="__main__":
         # print(i)
         loss_list.append((loss))
     # print("loss list = ",loss_list[-1])
-
+    hyperparameters=[seed,n_iterations,layer_list,alpha,max_value]
+    NN.parameters["hyperparameters"]=hyperparameters
     loss_list_x=range(1,len(loss_list)+1)
     NN.parameters["Loss_list"]=loss_list
     file = open("StoredWeights/param_dict.pkl", "wb")

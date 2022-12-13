@@ -4,17 +4,17 @@ from Graph import *
 from BFS import *
 from Prey import *
 from Predator import *
-from UStarPartialAgent import *
+from VPartialAgent import *
 import csv
 from time import time
 from datetime import datetime
-def simulate_ustar_partial_agent():
+def simulate_v_partial_agent():
     #=========== Log file =======================
     start = time()
-    # filename_txt="Results/UStarPartialAgent.txt"
-    filename_txt="/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/Results/UStarPartialAgent.txt"
+    # filename_txt="Results/VPartialAgent.txt"
+    filename_txt="/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/Results/VPartialAgent.txt"
 
-    # filename_csv="Results/UStarPartialAgent.csv"
+    # filename_csv="Results/VPartialAgent.csv"
     file=open(filename_txt,"a")
     # csvfile = open(filename_csv, "a")
     # csv_writer=csv.writer(csvfile)
@@ -43,7 +43,6 @@ def simulate_ustar_partial_agent():
         data = handle.read()
     utility_dict = pickle.loads(data)
     G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
-
     for sim in range(1,n_sim+1):
         n_win=0     # When agent and prey are in same position, provided pred is not in that position
         n_lose=0    # When agent and predator are in same position
@@ -62,7 +61,7 @@ def simulate_ustar_partial_agent():
             #spawn prey, predator and agent at random locations
             prey=Prey(n_nodes,G)
             predator=Predator(n_nodes, G)
-            ustar_partial_agent=UStarPartialAgent(n_nodes, G, prey, predator,utility_dict)
+            ustar_partial_agent=VPartialAgent(n_nodes, G, prey, predator,utility_dict)
             
             steps=0
             survey_list=list(range(1,51))
@@ -141,6 +140,7 @@ def simulate_ustar_partial_agent():
             n_sure+=ustar_partial_agent.sure_of_prey
 
 
+
         win_list.append(n_win)
         lose_list.append(n_lose)
         hang_list.append(n_hang)
@@ -179,7 +179,7 @@ def simulate_ustar_partial_agent():
     print("Execution time : "+str(end-start)+" s")
     file.close()
     # Log file End
-simulate_ustar_partial_agent()
+simulate_v_partial_agent()
 
 
                             
