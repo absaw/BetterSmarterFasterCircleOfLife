@@ -38,12 +38,19 @@ def v_model_agent():
     hang_list=[]
     step_list=[]
 
+    #Loading data
     with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredUtilities/Graph1_Utility6.pkl', 'rb') as handle:
         data = handle.read()
     utility_dict = pickle.loads(data)
-    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/weight_dict_till1500.pkl', 'rb') as handle:
+    
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/param_dict_11.pkl', 'rb') as handle:
         data = handle.read()
     param_dict = pickle.loads(data)
+    
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredDistances/dist_dict1.pkl', 'rb') as handle:
+        data = handle.read()
+    dist_dict = pickle.loads(data)
+
     G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
 
     for sim in range(1,n_sim+1):
@@ -65,7 +72,7 @@ def v_model_agent():
 
             prey=Prey(n_nodes,G)
             predator=Predator(n_nodes, G)
-            u_star_agent=VModelAgent(n_nodes, G, prey, predator,utility_dict,param_dict)
+            u_star_agent=VModelAgent(n_nodes, G, prey, predator,utility_dict,param_dict,dist_dict)
             
             path=[]
             path.append(u_star_agent.position)
@@ -217,10 +224,10 @@ def v_model_agent():
 
                 # path.append(next_position)
 
-        # print("Sim -> ", sim)
-        # print("Alive ->",n_win)       
-        # print("Dead ->",n_lose)       
-        # print("Hang ->",n_hang)       
+        print("Sim -> ", sim)
+        print("Alive ->",n_win)       
+        print("Dead ->",n_lose)       
+        print("Hang ->",n_hang)       
         # print()
         win_list.append(n_win)
         lose_list.append(n_lose)
