@@ -5,6 +5,7 @@ from Predator import *
 from AgentOne import *
 import copy
 import math
+import numpy as np
 class VPartialAgent:
     
     def __init__(self,n_nodes,G : nx.Graph,prey:Prey, predator:Predator,utility_dict,param_dict,dist_dict):
@@ -86,11 +87,13 @@ class VPartialAgent:
             upartial=0
             expected_prey_distance=0
             for possible_prey in range(1,51):
-
                 expected_prey_distance+=self.p_now[possible_prey-1]*self.dist_dict[(ag_neighbor,possible_prey)]
+            # print(expected_prey_distance)
             d_prey=expected_prey_distance
             input=np.reshape([d_prey,d_pred],(1,2))
+            # print("Input=",input)
             utility=self.get_utility(input)[0][0]
+            # print("Util=",utility)
             # agent_action_utility[state]= utility#we w
 
                 # possible_state=(ag_neighbor,possible_prey,predator.position)
@@ -112,37 +115,6 @@ class VPartialAgent:
         next_position=min_s
 
         self.position=next_position
-
-    
-    def simulate_step_old(self,survey_node,prey : Prey,predator:Predator):
-        # Simulate step will perform following actions:-
-        # 1. Update belief system for finding/not finding prey at current survey node
-        # 2. Move agent to next highest prob value neighbor by rules of Agent 1
-        # 3. Update belief system for finding/not finding prey at new position
-
-        #Prey's position here is only used to check if the surveyed node is the prey's node or not
-       
-        # 1. Belief update based on surveyed node
-        self.update_belief(survey_node, prey.position)
-        G_copy=copy.deepcopy(self.G)
-        
-        m=max(self.p_now)
-        max_prob_list=[node+1 for node in range(len(self.p_now)) if self.p_now[node]==m]
-        prey_virtual_location=random.choice(max_prob_list)
-        
-        virtual_prey=Prey(self.n_nodes,self.G)
-        virtual_prey.position=prey_virtual_location
-        
-        #2. Agent moves towards the highest prob_now node of prey with rules of agent One
-        ag_one=AgentOne(self.n_nodes, self.G, virtual_prey, self.predator)
-        ag_one.position=self.position
-        ag_one.simulate_step(virtual_prey, self.predator)
-        self.position=ag_one.position
-        
-        #Agent has now moved to the new position, according to agent 1's behaviour
-        # 3. Update belief system again
-        self.update_belief(self.position, prey.position)
-    
 
     def update_belief(self,survey_node,prey_positon):
         # Update belief changes the probability of the nodes based on the belief system 

@@ -4,17 +4,17 @@ from Graph import *
 from BFS import *
 from Prey import *
 from Predator import *
-from VPartialAgent import *
+from UStarPartialAgent import *
 import csv
 from time import time
 from datetime import datetime
-def simulate_v_partial_agent():
+def simulate_u_star_partial_agent():
     #=========== Log file =======================
     start = time()
-    # filename_txt="Results/VPartialAgent.txt"
-    filename_txt="/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/Results/VPartialAgent.txt"
+    # filename_txt="Results/UStarPartialAgent.txt"
+    filename_txt="/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/Results/UStarPartialAgent.txt"
 
-    # filename_csv="Results/VPartialAgent.csv"
+    # filename_csv="Results/UStarPartialAgent.csv"
     file=open(filename_txt,"a")
     # csvfile = open(filename_csv, "a")
     # csv_writer=csv.writer(csvfile)
@@ -61,7 +61,7 @@ def simulate_v_partial_agent():
             #spawn prey, predator and agent at random locations
             prey=Prey(n_nodes,G)
             predator=Predator(n_nodes, G)
-            ustar_partial_agent=VPartialAgent(n_nodes, G, prey, predator,utility_dict)
+            ustar_partial_agent=UStarPartialAgent(n_nodes, G, prey, predator,utility_dict)
             
             steps=0
             survey_list=list(range(1,51))
@@ -157,7 +157,7 @@ def simulate_v_partial_agent():
     print("Hang List : ",*hang_list)
     print("Sure List : ",*sure_list)
     # print("Step List : ",*step_list)
-    print("Average wins : ",(sum(win_list)/len(win_list)))
+    print("Average wins : ",(sum(win_list)/30))
     print("Average losses : ",(sum(lose_list)/len(lose_list)))
     print("Average hangs : ",(sum(hang_list)/len(hang_list)))
     print("Average steps : ",(sum(step_list)/len(step_list)))
@@ -168,7 +168,7 @@ def simulate_v_partial_agent():
     file.write("\n\nSummary : ")
     file.write("\nWin List : "+str(win_list))
     file.write("\nLose List : "+str(lose_list))
-    file.write("\nAverage wins : %.2f" % (sum(win_list)/len(win_list)))
+    file.write("\nAverage wins : %.2f" % (sum(win_list)/30))
     file.write("\nAverage losses : %.2f" % (sum(lose_list)/len(lose_list)))
     file.write("\nAverage hangs : %.2f" % (sum(hang_list)/len(hang_list)))
     file.write("\nAverage steps : %.2f" % (sum(step_list)/len(step_list)))
@@ -179,7 +179,7 @@ def simulate_v_partial_agent():
     print("Execution time : "+str(end-start)+" s")
     file.close()
     # Log file End
-simulate_v_partial_agent()
+simulate_u_star_partial_agent()
 
 
                             

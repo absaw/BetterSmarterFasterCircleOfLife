@@ -2,11 +2,10 @@ from Graph import *
 from BFS import *
 from Prey import *
 from Predator import *
-from AgentOne import *
 import copy
 import math
 import numpy as np
-class UStarPartialAgent:
+class UStarPartialAgentDataGenerator:
     
     def __init__(self,n_nodes,G : nx.Graph,prey:Prey, predator:Predator,utility_dict,dist_dict):
         self.n_nodes=n_nodes
@@ -44,29 +43,37 @@ class UStarPartialAgent:
         # prey_neighbors=list(self.G.neighbors(prey))+[prey] #Prey itself is also added since it can stay in same place
         # predator_neighbors=list(self.G.neighbors(predator))
         # agent_action_space=defaultdict()
-        
+        # d_prey=self.dist_dict[(agent,prey.position)]
+        d_pred=self.dist_dict[(agent,predator.position)]
         agent_action_utility=defaultdict()
-
+        expected_distance_dict=defaultdict()
         for ag_neighbor in agent_neighbors:
             # for prey_neighbor in prey_neighbors:
             #     for predator_neighbor in predator_neighbors:
             # state=(ag_neighbor,prey.position,predator.position)
             #ustar
-            d_prey=self.dist_dict[(ag_neighbor,prey.position)]
+            # d_prey=self.dist_dict[(ag_neighbor,prey.position)]
             d_pred=self.dist_dict[(ag_neighbor,predator.position)]
             
             upartial=0
+            expected_prey_distance=0
+            for possible_prey in range(1,51):
+                expected_prey_distance+=self.p_now[possible_prey-1]*self.dist_dict[(ag_neighbor,possible_prey)]
             for possible_prey in range(1,51):
                 possible_state=(ag_neighbor,possible_prey,predator.position)
+                # print(expected_prey_distance)
+                # d_prey=expected_prey_distance
                 if math.isinf(self.utility_dict[possible_state]):
                     # print("Inf detected")
                     upartial=100
                     break
                 upartial+=self.p_now[possible_prey-1]*self.utility_dict[possible_state]
-            # if math.isnan(upartial):
-            #     print("nan detected")
+            
+            # expected_distance_dict[ag_neighbor]=expected_prey_distance 
+            d_prey=expected_prey_distance
             agent_action_utility[ag_neighbor]=upartial #we will store the utility in here
             self.dataset.append([d_prey,d_pred,upartial])
+
 
         
         # print(agent_action_utility)
@@ -75,6 +82,9 @@ class UStarPartialAgent:
         min_state=[key for key in agent_action_utility if agent_action_utility[key]==min_utility]
         # print("Min State",min_state)
         min_s=random.choice(min_state)
+        # d_prey=expected_distance_dict[min_s]
+        # upartial=agent_action_utility[min_s]
+        # self.dataset.append([d_prey,d_pred,upartial])
         next_position=min_s
 
         self.position=next_position
@@ -149,7 +159,7 @@ class UStarPartialAgent:
         print("Sum of P_next : ",sum(self.p_next))
 
 
-#Used for testing. Not part of the main flow. UStarPartialAgent simulator will call UStarPartialAgent
+#Used for testing. Not part of the main flow. UStarPartialAgentDataGenerator simulator will call UStarPartialAgentDataGenerator
 if __name__=="__main__":
 
     n_nodes=50
@@ -157,7 +167,7 @@ if __name__=="__main__":
     prey=Prey(n_nodes,G)
     # prey.position=6
     predator=Predator(n_nodes, G)
-    agent_three=UStarPartialAgent(n_nodes, G, prey, predator)
+    agent_three=UStarPartialAgentDataGenerator(n_nodes, G, prey, predator)
     survey_list=list(range(1,51))
     survey_list.remove(agent_three.position)
     survey_node=random.choice(survey_list)

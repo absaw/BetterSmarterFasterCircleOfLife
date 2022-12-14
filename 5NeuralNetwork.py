@@ -255,14 +255,19 @@ if __name__=="__main__":
     # pickle.dump(dataset, file_dataset)
     # file_dataset.close()
 
-    with open('StoredData/upartial_dataset', 'rb') as handle:
+    with open('StoredData/upartial_dataset5', 'rb') as handle:
         data = handle.read()
     dataset = pickle.loads(data)
     X=dataset[:,:2]
     Y=dataset[:,-1]
+    # Xdf=pd.DataFrame(X)
+    # print(Xdf.describe())
+    # Ydf=pd.DataFrame(Y)
+    # print(Ydf.describe())
+    X=np.reshape(X,(len(X),2))
     Y=np.reshape(Y,(len(Y),1))
-    print(X.shape)
-    print(Y.shape)
+    # print(X.shape)
+    # print(Y.shape)
     
     # G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
 
@@ -317,7 +322,7 @@ if __name__=="__main__":
     # layer_list=[2,3,2,1]
     # alpha=0.000001
     layer_list=[2,3,2,1]
-    alpha=0.001
+    alpha=0.01
     n_iterations=1000
     # =======================
     # train=int(len(utility_dict)*0.8)

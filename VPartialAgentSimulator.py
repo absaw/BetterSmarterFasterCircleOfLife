@@ -4,17 +4,18 @@ from Graph import *
 from BFS import *
 from Prey import *
 from Predator import *
-from UStarPartialAgent import *
+from VPartialAgent import *
 import csv
 from time import time
 from datetime import datetime
-def simulate_ustar_partial_agent():
+import numpy as np
+def simulate_v_partial_agent():
     #=========== Log file =======================
     start = time()
-    # filename_txt="Results/UStarPartialAgent.txt"
-    filename_txt="/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/Results/UStarPartialAgent.txt"
+    # filename_txt="Results/VPartialAgent.txt"
+    filename_txt="/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/Results/VPartialAgent.txt"
 
-    # filename_csv="Results/UStarPartialAgent.csv"
+    # filename_csv="Results/VPartialAgent.csv"
     file=open(filename_txt,"a")
     # csvfile = open(filename_csv, "a")
     # csv_writer=csv.writer(csvfile)
@@ -42,6 +43,14 @@ def simulate_ustar_partial_agent():
     with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredUtilities/Graph1_Utility6.pkl', 'rb') as handle:
         data = handle.read()
     utility_dict = pickle.loads(data)
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/param_dict_partial_V_5.pkl', 'rb') as handle:
+            data = handle.read()
+    param_dict = pickle.loads(data)
+    
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredDistances/dist_dict1.pkl', 'rb') as handle:
+        data = handle.read()
+    dist_dict = pickle.loads(data)
+
     G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
 
     for sim in range(1,n_sim+1):
@@ -62,24 +71,24 @@ def simulate_ustar_partial_agent():
             #spawn prey, predator and agent at random locations
             prey=Prey(n_nodes,G)
             predator=Predator(n_nodes, G)
-            ustar_partial_agent=UStarPartialAgent(n_nodes, G, prey, predator,utility_dict)
+            v_partial_agent=VPartialAgent(n_nodes, G, prey, predator,utility_dict,param_dict,dist_dict)
             
             steps=0
             survey_list=list(range(1,51))
-            survey_list.remove(ustar_partial_agent.position)
+            survey_list.remove(v_partial_agent.position)
             survey_node=random.choice(survey_list)
             # The three players move in rounds, starting with the Agent, followed by the Prey, and then the Predator.
             while(steps<=max_steps):
                 steps+=1
                 # print("\n\nStep ->>>>> ",steps)
-                # ustar_partial_agent.print_state()
+                # v_partial_agent.print_state()
                 # ========= Terminal Condition Check  ========
-                if ustar_partial_agent.position==prey.position:
+                if v_partial_agent.position==prey.position:
                     # print("Prey found")
                     n_win+=1
                     n_steps+=steps
                     break
-                if ustar_partial_agent.position==predator.position:
+                if v_partial_agent.position==predator.position:
                     n_lose+=1
                     break
                 # Threshold condition
@@ -90,55 +99,55 @@ def simulate_ustar_partial_agent():
                
                 #========= Agent Three Simulation  ========
 
-                ustar_partial_agent.update_belief(ustar_partial_agent.position, prey.position)
-                ustar_partial_agent.simulate_step(prey, predator)
-                ustar_partial_agent.update_belief(ustar_partial_agent.position, prey.position)
-                # ustar_partial_agent.print_state()
+                v_partial_agent.update_belief(v_partial_agent.position, prey.position)
+                v_partial_agent.simulate_step(prey, predator)
+                v_partial_agent.update_belief(v_partial_agent.position, prey.position)
+                # v_partial_agent.print_state()
 
                 # Now we have our agent's next position
                 # ========= Terminal Condition Check  ========
-                if ustar_partial_agent.position==prey.position:
+                if v_partial_agent.position==prey.position:
                     n_win+=1
                     n_steps+=steps
                     break
-                if ustar_partial_agent.position==predator.position:
+                if v_partial_agent.position==predator.position:
                     n_lose+=1
                     break
 
                 # ======== Prey Simulation   =========
                 prey.simulate_step()
                 # New Info : Prey has moved. So update apply transition probability update to each node in graph
-                ustar_partial_agent.transition_update()
-                ustar_partial_agent.p_now=ustar_partial_agent.p_next.copy()
-                #ustar_partial_agent.print_sum()
+                v_partial_agent.transition_update()
+                v_partial_agent.p_now=v_partial_agent.p_next.copy()
+                #v_partial_agent.print_sum()
 
                 #========= Terminal Condition Check  ========
-                if ustar_partial_agent.position==prey.position:
+                if v_partial_agent.position==prey.position:
                     n_win+=1
                     n_steps+=steps
                     break
                 # New Info : Prey is not in current agent's position. So update belief system
-                # ustar_partial_agent.update_belief(ustar_partial_agent.position, prey.position)
+                # v_partial_agent.update_belief(v_partial_agent.position, prey.position)
                 
-                #ustar_partial_agent.print_sum()
+                #v_partial_agent.print_sum()
                 
                 # ======== Predator Simulation   =========
-                predator.simulate_step_distracted(ustar_partial_agent.position)
+                predator.simulate_step_distracted(v_partial_agent.position)
 
                 # ========= Terminal Condition Check  ========
-                if ustar_partial_agent.position==prey.position:
+                if v_partial_agent.position==prey.position:
                     n_win+=1
                     n_steps+=steps
                     break
-                if ustar_partial_agent.position==predator.position:
+                if v_partial_agent.position==predator.position:
                     n_lose+=1
                     break
 
-                m=max(ustar_partial_agent.p_now) #finding value with highest prob
-                survey_list=[node+1 for node in range(len(ustar_partial_agent.p_now)) if ustar_partial_agent.p_now[node]==m] # List of nodes with highest prob value
+                m=max(v_partial_agent.p_now) #finding value with highest prob
+                survey_list=[node+1 for node in range(len(v_partial_agent.p_now)) if v_partial_agent.p_now[node]==m] # List of nodes with highest prob value
                 survey_node=random.choice(survey_list) #Selecting a random element from highest prob value list
             
-            n_sure+=ustar_partial_agent.sure_of_prey
+            n_sure+=v_partial_agent.sure_of_prey
 
 
         win_list.append(n_win)
@@ -157,7 +166,7 @@ def simulate_ustar_partial_agent():
     print("Hang List : ",*hang_list)
     print("Sure List : ",*sure_list)
     # print("Step List : ",*step_list)
-    print("Average wins : ",(sum(win_list)/len(win_list)))
+    print("Average wins : ",(sum(win_list)/30))
     print("Average losses : ",(sum(lose_list)/len(lose_list)))
     print("Average hangs : ",(sum(hang_list)/len(hang_list)))
     print("Average steps : ",(sum(step_list)/len(step_list)))
@@ -168,7 +177,7 @@ def simulate_ustar_partial_agent():
     file.write("\n\nSummary : ")
     file.write("\nWin List : "+str(win_list))
     file.write("\nLose List : "+str(lose_list))
-    file.write("\nAverage wins : %.2f" % (sum(win_list)/len(win_list)))
+    file.write("\nAverage wins : %.2f" % (sum(win_list)/30))
     file.write("\nAverage losses : %.2f" % (sum(lose_list)/len(lose_list)))
     file.write("\nAverage hangs : %.2f" % (sum(hang_list)/len(hang_list)))
     file.write("\nAverage steps : %.2f" % (sum(step_list)/len(step_list)))
@@ -179,7 +188,7 @@ def simulate_ustar_partial_agent():
     print("Execution time : "+str(end-start)+" s")
     file.close()
     # Log file End
-simulate_ustar_partial_agent()
+simulate_v_partial_agent()
 
 
                             

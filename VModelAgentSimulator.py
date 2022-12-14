@@ -44,6 +44,7 @@ def v_model_agent():
     utility_dict = pickle.loads(data)
     
     with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/param_dict_14.pkl', 'rb') as handle:
+    # with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredWeights/param_dict_partial_V_5.pkl', 'rb') as handle:
         data = handle.read()
     param_dict = pickle.loads(data)
     

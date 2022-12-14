@@ -241,7 +241,7 @@ def simulate_u_star_agent():
     file.write("\n\nSummary : ")
     file.write("\nWin List : "+str(win_list))
     # file.write("\nLose List : "+str(lose_list))
-    file.write("\nAverage wins : %.2f" % (sum(win_list)/len(win_list)))
+    file.write("\nAverage wins : %.2f" % (sum(win_list)/30))
     # file.write("\nAverage losses : %.2f" % (sum(lose_list)/len(lose_list)))
     # file.write("\nAverage hangs : %.2f" % (sum(hang_list)/len(hang_list)))
     file.write("\nAverage steps : %.2f" % (sum(step_list)/len(step_list)))
