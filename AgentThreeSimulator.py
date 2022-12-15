@@ -36,6 +36,12 @@ def simulate_agent_three():
     hang_list=[]
     step_list=[]
     sure_list=[]
+
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredUtilities/Graph1_Utility6.pkl', 'rb') as handle:
+        data = handle.read()
+    utility_dict = pickle.loads(data)
+    G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
+
     for sim in range(1,n_sim+1):
         n_win=0     # When agent and prey are in same position, provided pred is not in that position
         n_lose=0    # When agent and predator are in same position
@@ -47,8 +53,8 @@ def simulate_agent_three():
         for trial in range(1,n_trials+1):
 
             #generate graph
-            GraphClass=Graph(n_nodes)
-            G=GraphClass.G
+            # GraphClass=Graph(n_nodes)
+            # G=GraphClass.G
 
             #spawn prey, predator and agent at random locations
             prey=Prey(n_nodes,G)
@@ -165,7 +171,7 @@ def simulate_agent_three():
     print("Execution time : "+str(end-start)+" s")
     file.close()
     # Log file End
-# simulate_agent_three()
+simulate_agent_three()
 
 
                             

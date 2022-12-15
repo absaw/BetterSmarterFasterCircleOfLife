@@ -14,7 +14,7 @@ class NeuralNetwork:
         self.layer_list=layer_list
         # self.X=X
         # self.Y=Y
-        self.train_size=1
+        self.train_size=0.8
         self.parameters={}
         self.alpha=alpha
         self.seed=seed
@@ -29,15 +29,15 @@ class NeuralNetwork:
         self.Y_train=self.Y[:train_limit,:]
         self.Y_test=self.Y[train_limit:,:]
 
-    # def initialize_custom_weights(self,param_dict,input):
-    #     self.W1=param_dict["W1"]
-    #     self.W2=param_dict["W2"]
-    #     self.W3=param_dict["W3"]
-    #     self.BW1=param_dict["BW1"]
-    #     self.BW2=param_dict["BW2"]
-    #     self.bias1=param_dict["bias1"]
-    #     self.bias2=param_dict["bias2"]
-        # self.X_train=input
+    def initialize_custom_weights(self,param_dict,input):
+        self.W1=param_dict["W1"]
+        self.W2=param_dict["W2"]
+        self.W3=param_dict["W3"]
+        self.BW1=param_dict["BW1"]
+        self.BW2=param_dict["BW2"]
+        self.bias1=param_dict["bias1"]
+        self.bias2=param_dict["bias2"]
+        self.X_train=input
         
     def initialize_weights(self):
         # np.random.seed(self.seed) # Seed the random number generator
@@ -152,7 +152,6 @@ class NeuralNetwork:
         self.parameters["Z3"]=self.Z3
         self.parameters["bias1"]=self.bias1
         self.parameters["bias2"]=self.bias2
-        self.parameters["bias3"]=self.bias3
         self.parameters["Y_hat"]=self.Y_hat
     
 
@@ -263,7 +262,7 @@ if __name__=="__main__":
     
     X = np.zeros([125000,2])
     Y=np.zeros([125000,1])
-    max_value=100
+    max_value=50
     # X=[]
     # Y=[]
     i=0
@@ -320,8 +319,8 @@ if __name__=="__main__":
     # print(NN.reLuPrime(a))
     NN.split_dataset(X,Y)
 
-    NN.initialize_weights()
-    NN.forward_propogation()
+    # NN.initialize_weights()
+    # NN.forward_propogation()
     # NN.back_propogation()
 
     # NN.forward_propogation()
@@ -329,14 +328,14 @@ if __name__=="__main__":
 
     # ======================= For Test prediction =========
     # with open('StoredWeights/weight_dict_till_2000.pkl', 'rb') as handle:
-    # with open('StoredWeights/weight_dict_till5000.pkl', 'rb') as handle:
-    #     data = handle.read()
-    # weight_dict = pickle.loads(data)
+    with open('StoredWeights/param_dict.pkl', 'rb') as handle:
+        data = handle.read()
+    weight_dict = pickle.loads(data)
 
-    # NN.initialize_custom_weights(weight_dict,NN.X_test)
-    # NN.forward_propogation_pred(NN.X_test)
-    # loss=NN.mean_squared_error(NN.Y_test, NN.Y_hat)
-    # print(") RMSE == ",np.sqrt(loss))
+    NN.initialize_custom_weights(weight_dict,NN.X_test)
+    NN.forward_propogation()
+    loss=NN.mean_squared_error(NN.Y_test, NN.Y_hat)
+    print(") RMSE == ",(loss))
     #==================================
     # NN.print_state(NN.W1)
     # NN.print_state(NN.BW1)
@@ -353,49 +352,44 @@ if __name__=="__main__":
     # NN.print_state(NN.W3)
 
     #=============================
-    loss_list=[]
-    for i in range(n_iterations):
+    # loss_list=[]
+    # for i in range(n_iterations):
 
-        NN.back_propogation()
-        # print("\n====")
-        # print(NN.dJ_dW1)
-        # print(NN.dJ_dW2)
-        # print(NN.dJ_dW3)
-        NN.forward_propogation()
-        loss=NN.mean_squared_error(NN.Y_train, NN.Y_hat)
-        print(i,") MSE == ",(loss))
-        # NN.print_state(NN.parameters["Y_hat"])
-        # for value in NN["Y_hat"]:
-        #     print(value)
+    #     NN.back_propogation()
+    #     # print("\n====")
+    #     # print(NN.dJ_dW1)
+    #     # print(NN.dJ_dW2)
+    #     # print(NN.dJ_dW3)
+    #     NN.forward_propogation()
+    #     loss=NN.mean_squared_error(NN.Y_train, NN.Y_hat)
+    #     print(i,") MSE == ",(loss))
+    #     # NN.print_state(NN.parameters["Y_hat"])
+    #     # for value in NN["Y_hat"]:
+    #     #     print(value)
 
-        # print(i)
-        loss_list.append((loss))
-    # print("loss list = ",loss_list[-1])
-    hyperparameters=[seed,n_iterations,layer_list,alpha,max_value]
-    NN.parameters["hyperparameters"]=hyperparameters
-    loss_list_x=range(1,len(loss_list)+1)
-    NN.parameters["Loss_list"]=loss_list
-    file = open("StoredWeights/param_dict.pkl", "wb")
-    pickle.dump(NN.parameters, file)
+    #     # print(i)
+    #     loss_list.append((loss))
+    # # print("loss list = ",loss_list[-1])
+    # hyperparameters=[seed,n_iterations,layer_list,alpha,max_value]
+    # NN.parameters["hyperparameters"]=hyperparameters
+    # loss_list_x=range(1,len(loss_list)+1)
+    # NN.parameters["Loss_list"]=loss_list
+    # file = open("StoredWeights/param_dict.pkl", "wb")
+    # pickle.dump(NN.parameters, file)
 
-    # file.close()
-    plot_name="Mean Square Error vs No. of Iterations"
-    xlabel="No. of Iterations"
-    ylabel="Mean Square Error"
-    plt.title(plot_name)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.plot(loss_list_x,loss_list)
+    # # file.close()
+    # plot_name="Model V - Mean Square Error vs No. of Iterations"
+    # xlabel="No. of Iterations"
+    # ylabel="Mean Square Error"
+    # plt.title(plot_name)
+    # plt.xlabel(xlabel)
+    # plt.ylabel(ylabel)
+    # plt.plot(loss_list_x,loss_list)
     
-    timenow=str(datetime.now().strftime("%H-%M-%S"))
-    plt.savefig("StoredCharts/"+timenow+".png")
-    plt.show()
+    # timenow=str(datetime.now().strftime("%H-%M-%S"))
+    # plt.savefig("StoredCharts/"+timenow+".png")
+    # plt.show()
     #===========================
-    # print(NN.Y_hat)
-    # Y_hat_df=pd.DataFrame(NN.Y_hat)
-    # print(Y_hat_df.describe())
-
-
 
 
 

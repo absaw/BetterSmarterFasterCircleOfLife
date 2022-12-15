@@ -125,7 +125,7 @@ class UStarPartialAgent:
         print("Neighbors : ",*list(self.G.neighbors(self.prey.position)))
         print("Predator Position : ",self.predator.position)
         print("Neighbors : ",*list(self.G.neighbors(self.predator.position)))
-        d_prey=len(get_bfs_path(self.G, self.position, self.prey.position)[1])  #Distance from prey
+        d_prey=len(get_bfs_path(self.G, self.position, self.prey.position))  #Distance from prey
         d_predator=len(get_bfs_path(self.G, self.position, self.predator.position)[1])  #Distance from predator
         print("Distance to Prey : ",d_prey)
         print("Distance to Predator : ",d_predator)

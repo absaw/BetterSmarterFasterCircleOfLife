@@ -8,7 +8,7 @@ from AgentTwo import *
 import csv
 from time import time
 from datetime import datetime
-def simulate_agent_two():
+def simulate_agent_two(a,b,c):
     #=========== Log file =======================
     start = time()
     filename_txt="Results/AgentTwo.txt"
@@ -26,8 +26,8 @@ def simulate_agent_two():
     csv_writer.writerow(["Execution Started"])
 
     #============================================
-    n_sim=30      # No. of simulations
-    n_trials=100    # No. of Trials. Each trial has a random new graph. Final Metrics of one simulation will be calculated from these 100 trials
+    n_sim=1    # No. of simulations
+    n_trials=1    # No. of Trials. Each trial has a random new graph. Final Metrics of one simulation will be calculated from these 100 trials
                     # We then average out the metrics, from the 30 simulations we have, to eventually get the final results.
     
     n_nodes=50
@@ -35,6 +35,10 @@ def simulate_agent_two():
     lose_list=[]
     hang_list=[]
     step_list=[]
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredUtilities/Graph1_Utility6.pkl', 'rb') as handle:
+        data = handle.read()
+    utility_dict = pickle.loads(data)
+    G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
 
     for sim in range(1,n_sim+1):
         n_win=0     # When agent and prey are in same position, provided pred is not in that position
@@ -48,14 +52,18 @@ def simulate_agent_two():
 
             #generate graph
             # G=generate_graph(n_nodes)
-            GraphClass=Graph(n_nodes)
-            G=GraphClass.G
+            # GraphClass=Graph(n_nodes)
+            # G=GraphClass.G
 
             #spawn prey, predator and agent at random locations
 
             prey=Prey(n_nodes,G)
             predator=Predator(n_nodes, G)
             agent_two=AgentTwo(n_nodes, G, prey, predator)
+
+            agent_two.position=a
+            prey.position=b
+            predator.position=c
             
             path=[]
             path.append(agent_two.position)
@@ -65,6 +73,8 @@ def simulate_agent_two():
             while(steps<=max_steps):
                 steps+=1
                 #========= Agent Two Simulation  ========
+                text="\nStep = "+str(steps)+"| State = ("+str(agent_two.position)+","+str(prey.position)+","+str(predator.position)
+                file.write(text)
                 agent_two.simulate_step(prey, predator)
                 # Now we have our agent's next position
 
@@ -151,7 +161,7 @@ def simulate_agent_two():
     # Log file End
     print("Done!")
 
-# simulate_agent_two()
+simulate_agent_two(1,44,45)
 
 
                             

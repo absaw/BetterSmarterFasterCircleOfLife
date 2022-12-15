@@ -9,27 +9,27 @@ class Predator:
         self.position=random.randint(1,n_nodes)
         self.G=G
     #For normal predator which always moves towards agent
-    # def simulate_step(self,agent_pos):
+    def simulate_step(self,agent_pos):
     
-    #     neighbor_list=list(self.G.neighbors(self.position))
-    #     degree=self.G.degree(self.position)
-    #     shortest_path_list=[]
-    #     shortest_path_len_list=[]
-    #     for neighbor in neighbor_list:
-    #         bfs_result=get_bfs_path(self.G, neighbor, agent_pos)
-    #         # if bfs_result[0]:
-    #         shortest_path_list.append(bfs_result)
-    #         shortest_path_len_list.append(len(bfs_result))
-    #         # else:
-    #             # continue
+        neighbor_list=list(self.G.neighbors(self.position))
+        degree=self.G.degree(self.position)
+        shortest_path_list=[]
+        shortest_path_len_list=[]
+        for neighbor in neighbor_list:
+            bfs_result=get_bfs_path(self.G, neighbor, agent_pos)
+            # if bfs_result[0]:
+            shortest_path_list.append(bfs_result)
+            shortest_path_len_list.append(len(bfs_result))
+            # else:
+                # continue
         
-    #     min_path_len=min(shortest_path_len_list)
-    #     min_path_list=[node for node in shortest_path_list if len(node)==min_path_len]
-    #     shortest_path=random.choice(min_path_list)
-    #     next_pos=shortest_path[0]#neighbor with the shortest path length
-    #     self.position=next_pos
+        min_path_len=min(shortest_path_len_list)
+        min_path_list=[node for node in shortest_path_list if len(node)==min_path_len]
+        shortest_path=random.choice(min_path_list)
+        next_pos=shortest_path[0]#neighbor with the shortest path length
+        self.position=next_pos
     
-    #For distracted predator which moves towards agent with probability 0.6 and randomly with a probability 0.4
+    # For distracted predator which moves towards agent with probability 0.6 and randomly with a probability 0.4
     def simulate_step_distracted(self,agent_pos):
 
         prob=random.random()

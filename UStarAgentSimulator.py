@@ -8,7 +8,7 @@ from UStarAgent import *
 import csv
 from time import time
 from datetime import datetime
-def simulate_u_star_agent():
+def simulate_u_star_agent(a,b,c):
     start = time()
     
     #=========== Log file =======================
@@ -29,7 +29,7 @@ def simulate_u_star_agent():
     #============================================
 
     n_sim=1    # No. of simulations
-    n_trials=3000    # No. of Trials. Each trial has a random new graph. Final Metrics of one simulation will be calculated from these 100 trials
+    n_trials=1    # No. of Trials. Each trial has a random new graph. Final Metrics of one simulation will be calculated from these 100 trials
                     # We then average out the metrics, from the 30 simulations we have, to eventually get the final results.
     
     n_nodes=50
@@ -41,6 +41,11 @@ def simulate_u_star_agent():
     with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredUtilities/Graph1_Utility6.pkl', 'rb') as handle:
         data = handle.read()
     utility_dict = pickle.loads(data)
+
+    with open('/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredDistances/dist_dict1.pkl', 'rb') as handle:
+        data = handle.read()
+    dist_dict = pickle.loads(data)
+
     G = nx.read_gpickle("/Users/abhishek.sawalkar/Library/Mobile Documents/com~apple~CloudDocs/AI Project/BetterSmarterFasterCircleOfLife/StoredGraph/Graph1.gpickle")
 
     for sim in range(1,n_sim+1):
@@ -63,7 +68,11 @@ def simulate_u_star_agent():
             prey=Prey(n_nodes,G)
             predator=Predator(n_nodes, G)
             u_star_agent=UStarAgent(n_nodes, G, prey, predator,utility_dict)
-            
+
+            u_star_agent.position=a
+            prey.position=b
+            predator.position=c
+
             path=[]
             path.append(u_star_agent.position)
             steps=0
@@ -71,6 +80,18 @@ def simulate_u_star_agent():
             # The three players move in rounds, starting with the Agent, followed by the Prey, and then the Predator.
             while(steps<=max_steps):
                 steps+=1
+                text="\nStep = "+str(steps)+"| State = ("+str(u_star_agent.position)+","+str(prey.position)+","+str(predator.position)
+                file.write(text)
+                for n in list(G.neighbors(u_star_agent.position)):
+                    state=(n,prey.position,predator.position)
+                    d_prey=dist_dict[(n,prey.position)]
+                    d_pred=dist_dict[(n,predator.position)]
+                    u=utility_dict[state]
+                    text="\nState ->"+str(state)+", Utility="+str(u)
+                    file.write(text)
+                    text=" Distance Prey->"+str(d_prey)+", Predator="+str(d_pred)
+                    file.write(text)
+                
                 # print("\n\n New Step Started \n\n")
                 #========= Agent One Simulation  ========
                 #======== Print State ========
@@ -252,7 +273,7 @@ def simulate_u_star_agent():
     file.close()
     # Log file End
     print("Done!")
-simulate_u_star_agent()
+simulate_u_star_agent(1,44,45)
 
 
                             

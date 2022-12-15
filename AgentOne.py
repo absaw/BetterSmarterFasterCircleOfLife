@@ -1,5 +1,5 @@
-from Graph import *
 from BFS import *
+from Graph import *
 from Prey import *
 from Predator import *
 
@@ -18,8 +18,8 @@ class AgentOne:
 
     def simulate_step(self,prey : Prey,predator:Predator):
         
-        d_prey=len(get_bfs_path(self.G, self.position, prey.position)[1])     #Distance from prey
-        d_predator=len(get_bfs_path(self.G, self.position, predator.position)[1])  #Distance from predator
+        d_prey=len(get_bfs_path(self.G, self.position, prey.position))    #Distance from prey
+        d_predator=len(get_bfs_path(self.G, self.position, predator.position))  #Distance from predator
 
         neighbor_list=list(self.G.neighbors(self.position))
         
@@ -30,8 +30,8 @@ class AgentOne:
 
         cost_matrix={}
         for neighbor in neighbor_list:
-            c_prey=len(get_bfs_path(self.G, neighbor, prey.position)[1])
-            c_predator=len(get_bfs_path(self.G, neighbor, predator.position)[1])
+            c_prey=len(get_bfs_path(self.G, neighbor, prey.position))
+            c_predator=len(get_bfs_path(self.G, neighbor, predator.position))
             cost_matrix[neighbor]=[c_prey,c_predator]
         l1=[]
         for neighbor in neighbor_list:
